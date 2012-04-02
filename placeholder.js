@@ -2,21 +2,20 @@
  * A simple jQuery plugin to convert labels into placeholder text.
  */
 (function($) {
-	$.fn.labelToPlaceholder = function(settings) {
+	
+	$.fn.placeholder = function(settings) {
 
 		if ( this.length == 0 ) return this;
 
-		settings = $.extend({
-			overflow : 'hidden',
-			opacity : 0.6
-		}, settings);
+		settings = $.extend({}, $.fn.placeholder.defaults, settings);
 
-		var $set = this.add('input,textarea',this);
+		// Discover the full set of inputs to act on.
+		var $set = this.add(settings.elements.join(','),this);
 
-		$set.each(function(){
+		$set.each(function() {
 
-			var $this = $(this);
-			var $label = $('label[for="' + $this.attr('id') + '"]');
+			var $this = $(this),
+				$label = $('label[for="' + $this.attr('id') + '"]');
 
 			if ( $label.length == 0 ) return;
 
@@ -28,7 +27,7 @@
 				display: 'block',
 				width: $this.width(),
 				height: $this.height(),
-				lineHeight: $this.height() + 'px',
+				lineHeight: (this.tagName == 'TEXTAREA') ? '1em' : $this.height() + 'px',
 				fontSize: $this.css('fontSize'),
 				opacity: settings.opacity,
 				'float': 'none'
@@ -43,16 +42,38 @@
 			});
 			if ($this.val() != '') $label.hide();
 
-			$this.focus(function(){
-				$label.hide();
+			$this.keyup(function(){
+				if ($(this).val() != '') {
+					$label.hide();
+				} else {
+					$label.show();
+				}
 			});
 
 			$this.blur(function(){
 				if ($($this).val() == '') $label.show();
 			});
 		});
+		
+		// Chaining
 		return this;
 	};
+	
+	$.fn.placeholder.defaults = {
+			overflow : 'hidden',
+			opacity : 0.6,
+			elements : [
+				'input[type=text]',
+				'input[type=password]',
+				'input[type=email]',
+				'textarea'
+			]
+		}
+	
+	// $.fn.labelToPlace holder is depreciated. TODO: log it to the console.
+	$.fn.labelToPlaceholder = $.fn.placeholder;
+	
+	
 })(jQuery);
 
 /**
