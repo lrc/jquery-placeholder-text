@@ -41,9 +41,13 @@
 				left: input_position.left + inner_offset.left
 			});
 			if ($this.val() != '') $label.hide();
+			
+			$label.on('click', function(){
+				$this.focus();
+			});
 
-			$this.keyup(function(){
-				if ($(this).val() != '') {
+			$this.on('keyup blur', function(e){
+				if ($(e.target).val() != '') {
 					$label.hide();
 				} else {
 					$label.show();
